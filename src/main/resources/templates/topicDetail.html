@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<link type="text/css" rel="stylesheet" href="../css/bootstrap.min.css"
+	th:href="@{../css/bootstrap.min.css}" />
+	
+<head>
+<title>Topic responses</title>
+</head>
+<body>
+
+	<h1 th:text="${topic.getTitle()}"></h1>
+	
+	<table>
+
+		<div th:each="response : ${responses}">
+			<tr>
+				<td th:text="${response.author.getUsername()} + ' writted'">author...</td>
+			</tr>
+			<tr>
+				<th th:text="${response.content}">content...</th>
+			</tr>
+			<tr>
+				<td th:text="${response.getDate()}">date...</td>
+				<td th:text="${response.nbLike} + '❤️'">likes...</td>	
+				<td th:text="${response.nbDislike}">dislikes...</td>		
+			</tr>
+		</div>
+
+	</table>
+
+
+</body>
+</html>

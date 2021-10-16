@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"
+	th:href="@{css/bootstrap.min.css}" />
+	
+<head>
+<title>Topics</title>
+</head>
+<body>
+
+	<h1>Information for exhange student in Finland</h1>
+
+	<h2>Topics</h1>
+
+
+	<table class="table table-striped">
+
+		<tr th:each="topic : ${topics}">
+			<td colspan=3>
+			<a th:text="${topic.getTitle()}" th:href="@{/topics/{id}(id=${topic.id})}" class="btn btn-primary"></a>
+			</td>
+			<td th:text="'Author : ' + ${topic.author.getUsername()}">author...</td>
+			<td th:text="'Posted on ' + ${topic.getDate()}">date...</td>
+			<td th:text="${topic.nbParticipants} + ' people participated'">nbParticipants...</td>
+			<td th:text="${topic.nbFolowers} + ' people folowing'">nbFolowers...</td>
+		</tr>
+	</table>
+
+
+</body>
+</html>
