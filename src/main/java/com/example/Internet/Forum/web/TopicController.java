@@ -28,6 +28,7 @@ import com.example.Internet.Forum.domain.TopicRepository;
 import com.example.Internet.Forum.domain.User;
 import com.example.Internet.Forum.domain.UserRepository;
 import com.example.Internet.Forum.domain.models.Message;
+import com.example.Internet.Forum.domain.utils.BoyerMooreHorspoolSearch;
 
 @Controller
 public class TopicController {
@@ -162,7 +163,8 @@ public class TopicController {
 		Iterable<Topic> topics = topicRep.findAll();
 
 		model.addAttribute("topics", topics);
-		model.addAttribute("message", new Message());
+		model.addAttribute("searchInput", new Message());
+		model.addAttribute("responseInput", new Message());
 		
 		return "topics";
 	}
@@ -221,10 +223,34 @@ public class TopicController {
 	}
 	
 	@PostMapping("/search")
-	public String search(Message message) {
+	public String search(Model model, Message searchInput, Message responseInput) {
+		
+		if(searchInput.getContent().length() == 0) {
+			return "redirect:topics";
+		}
 
 		
-		return "login";
+		Iterable<Topic> topics = topicRep.findAll();
+		List<Topic> matchingTopics = new ArrayList<Topic>();
+		
+		for(Topic t : topics) {
+			
+			int position = new BoyerMooreHorspoolSearch()
+					.find(t.getTitle().toLowerCase(),searchInput.getContent().toLowerCase());
+			
+			
+			if(position != -1) {
+				matchingTopics.add(t);
+
+			}
+			
+		}
+		
+		model.addAttribute("topics", matchingTopics);
+		model.addAttribute("searchInput", searchInput);
+		model.addAttribute("responseInput", responseInput);
+		
+		return "topics";
 	}
 
 	/*
