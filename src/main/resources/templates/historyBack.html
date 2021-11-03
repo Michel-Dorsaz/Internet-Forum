@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+
+
+<head>
+<title>historyBack</title>
+
+	<script th:inline="javascript">
+		var i = /*[[${pagesBack}]]*/ 0;
+
+		window.history.go(i);
+	</script>
+</head>
+<body>
+
+</body>
+</html>
+

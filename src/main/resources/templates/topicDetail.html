@@ -5,32 +5,182 @@
 
 <link type="text/css" rel="stylesheet" href="../css/bootstrap.min.css"
 	th:href="@{../css/bootstrap.min.css}" />
-	
+
 <head>
 <title>Topic responses</title>
+<style>
+div.fixed {
+	position: fixed;
+	width: 100%;
+	bottom: 0px;
+	border: 3px solid;
+}
+
+.header {
+	width: 100%
+}
+
+.content {
+	width: 100%;
+	bottom: 0px;
+}
+
+.collapsed {
+	display: none;
+}
+
+.mousePointer:hover {
+	cursor: pointer;
+}
+
+.fullWidth {
+	width: 100%
+}
+</style>
 </head>
 <body>
 
-	<h1 th:text="${topic.getTitle()}"></h1>
-	
-	<table>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+		<a class="navbar-brand" href="#"> <img
+			th:src="@{../images/wtf.jpg}" width="60" height="60" alt="">
+		</a>
+
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item active"><a class="nav-link"
+					th:href="@{/topics}">Back to topics</a></li>
+
+				<li sec:authorize="!isAuthenticated()"
+					title="You must be logged to create a response !" class="nav-item"><a
+					class="nav-link disabled" href="#" aria-disabled="true">Respond
+						to topic</a></li>
+
+				<li sec:authorize="isAuthenticated()" class="nav-item active">
+					<a class="nav-link mousePointer" onclick="footerSwitch()">Respond
+						to topic</a>
+				</li>
+			</ul>
+
+		</div>
+
+
+		<div class="mr-5">
+			<form class="form-inline my-2 my-lg-0">
+				<input class="form-control mr-sm-2" type="search"
+					placeholder="Search response" aria-label="Search">
+				<button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
+			</form>
+		</div>
+
+		<div sec:authorize="!isAuthenticated()">
+			<a th:href="@{/login}" class="btn btn-primary">Sign in</a>
+		</div>
+		<div sec:authorize="isAuthenticated()">
+			<form th:action="@{/logout}" method="post">
+				<input type="submit" value="Sign Out" class="btn btn-danger" />
+			</form>
+		</div>
+
+
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#navbarSupportedContent"
+			aria-controls="navbarSupportedContent" aria-expanded="false"
+			aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+	</nav>
+
+
+	<h1 class="text-center pb-4 pt-4" th:text="${topic.getTitle()}"></h1>
+
+	<table class="fullWidth">
 
 		<div th:each="response : ${responses}">
 			<tr>
-				<td th:text="${response.author.getUsername()} + ' writted'">author...</td>
+				<td class="text-danger"
+					th:if="${response.author.getRole().contentEquals('ADMIN') && !topic.author.equals(response.author)}"
+					th:text="${response.author.getUsername()} + ' wrote'">admin
+					author...</td>
+
+				<td class="text-warning"
+					th:if="${response.author.getRole().contentEquals('ADMIN') && topic.author.equals(response.author)}"
+					th:text="${response.author.getUsername()} + ' wrote'">admin
+					topic owner author...</td>
+
+				<td class="text-primary"
+					th:if="${topic.author.equals(response.author)}"
+					th:unless="${response.author.getRole().contentEquals('ADMIN')}"
+					th:text="${response.author.getUsername()} + ' wrote'">topic
+					owner author...</td>
+
+				<td class="text-success"
+					th:unless="${response.author.getRole().contentEquals('ADMIN') || topic.author.equals(response.author)}"
+					th:text="${response.author.getUsername()} + ' wrote'">user
+					author...</td>
+
 			</tr>
 			<tr>
 				<th th:text="${response.content}">content...</th>
 			</tr>
-			<tr>
+			<tr class="border-bottom">
 				<td th:text="${response.getDate()}">date...</td>
-				<td th:text="${response.nbLike} + '❤️'">likes...</td>	
-				<td th:text="${response.nbDislike}">dislikes...</td>		
+				<td th:text="${response.nbLike} + '👍'">likes...</td>
+				<td th:text="${response.nbDislike} + '👎'">dislikes...</td>
 			</tr>
 		</div>
 
 	</table>
 
+
+	<div sec:authorize="isAuthenticated()"
+		class="fixed bg-white text-center" id="footer">
+		<h3 class="header mousePointer">Click here to add your response</h3>
+
+		<div class="content collapsed">
+
+			<div class="container mt-4 mb-4">
+				<div class="row justify-content-md-center">
+					<div class="col-md-12 col-lg-8">
+						<div class="form-group">
+							<textarea id="editor"></textarea>
+						</div>
+						<button type="submit" class="btn btn-primary">Submit</button>
+					</div>
+				</div>
+			</div>
+d		</div>
+
+	</div>
+
+	<script
+		src="https://cdn.tiny.cloud/1/xcutwhg1v409nkcausd265uz2522o3qznd8xw7m7nu401rnl/tinymce/5/tinymce.min.js"
+		referrerpolicy="origin"></script>
+
+	<script type="text/javascript"
+		src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
+
+	<script>
+		tinymce.init({
+			selector : 'textarea#editor',
+			menubar : false
+		});
+
+		$(".header").click(function() {
+
+			footerSwitch();
+
+		});
+
+		function footerSwitch() {
+			var content = document.getElementById("footer").children[1];
+
+			if (content.classList.contains('collapsed')) {
+				content.classList.remove('collapsed');
+			} else {
+				content.classList.toggle('collapsed');
+			}
+		}
+	</script>
 
 </body>
 </html>

@@ -7,21 +7,27 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.example.Internet.Forum.domain.LoggedUser;
 import com.example.Internet.Forum.domain.Response;
 import com.example.Internet.Forum.domain.ResponseRepository;
 import com.example.Internet.Forum.domain.Topic;
 import com.example.Internet.Forum.domain.TopicRepository;
 import com.example.Internet.Forum.domain.User;
 import com.example.Internet.Forum.domain.UserRepository;
+import com.example.Internet.Forum.domain.models.Message;
 
 @Controller
 public class TopicController {
@@ -38,7 +44,7 @@ public class TopicController {
 					"admin", 
 					"$2a$10$0MMwY.IQqpsVc1jC8u7IJ.2rT8b0Cd3b3sfIBGV2zfgnPGtT4r0.C", 
 					"user@email.com",
-					"USER");
+					"ADMIN");
 			
 		User michel = new User(
 				"michel", 
@@ -59,7 +65,7 @@ public class TopicController {
 		Topic topic1 = new Topic(
 				"Welcome to Finlande",
 				Calendar.getInstance().getTimeInMillis(),
-				1,
+				2,
 				0,
 				admin
 				);
@@ -67,7 +73,7 @@ public class TopicController {
 		Topic topic2 = new Topic(
 				"Looking for a room",
 				Calendar.getInstance().getTimeInMillis(),
-				1,
+				2,
 				0,
 				user
 				);
@@ -85,6 +91,17 @@ public class TopicController {
 				topic2
 				);
 		
+		Response res11 = new Response(
+				"Have you looked at HOAS ? They offer cheap rooms for students. "
+				+ "Available rooms are limited so you should apply as soon as you can !"
+				+ "You can apply at https://hoas.fi/en/applicants/exchange-students/",
+				new Date().getTime(),
+				12,
+				0,
+				admin,
+				topic2
+				);
+		
 		Response res2 = new Response(
 				"Welcome to Finlande ! In this forum you can find many usefull "
 				+ "informations ! And if you can't find the one you need, "
@@ -96,8 +113,29 @@ public class TopicController {
 				topic1
 				);
 		
+		Response res21 = new Response(
+				"Very usefull forum 👍",
+				new Date().getTime(),
+				4,
+				0,
+				user,
+				topic1
+				);
+		
+		Response res22 = new Response(
+				"I was looking for that ! ♥",
+				new Date().getTime(),
+				1,
+				0,
+				user,
+				topic1
+				);
+		
 		responseRep.save(res1);
-		//responseRep.save(res2);
+		responseRep.save(res11);
+		responseRep.save(res2);
+		responseRep.save(res21);
+		responseRep.save(res22);
 		
 		};
 	}
@@ -112,12 +150,11 @@ public class TopicController {
 	private UserRepository userRep;
 
 	@GetMapping("/login")
-	public String login(Model model) {
+	public String loginPage(Model model) {
 
 		return "login";
 	}
-
-	https://stackoverflow.com/questions/46330830/how-to-use-thymeleaf-to-include-html-file-into-another-html-file/53717810
+	
 		
 	@GetMapping("/topics")
 	public String topiclist(Model model) {
@@ -125,6 +162,7 @@ public class TopicController {
 		Iterable<Topic> topics = topicRep.findAll();
 
 		model.addAttribute("topics", topics);
+		model.addAttribute("message", new Message());
 		
 		return "topics";
 	}
@@ -133,7 +171,7 @@ public class TopicController {
 	public String topicdetail(@PathVariable("id") Long topicId, Model model) {
 			
 		
-		Optional topic = topicRep.findById(topicId);
+		Optional<Topic> topic = topicRep.findById(topicId);
 		
 		if(topic.isPresent()) {
 			
@@ -141,14 +179,53 @@ public class TopicController {
 			
 			model.addAttribute("responses", responses);
 			model.addAttribute("topic", (Topic) topic.get());
-			
+				
 			return "topicDetail";
 		}
 		
 
-		return "login";
+		return "error";
 	}
 
+	@GetMapping("/historyBack/{id}")
+	public String logout(@PathVariable("id") int id, Model model) {
+		
+		model.addAttribute("pagesBack", -id);
+		
+	    return "historyBack";
+	}
+	
+	@GetMapping("/createTopic")
+	public String createTopic(Model model) {
+		
+		LoggedUser loggedUser = (LoggedUser) SecurityContextHolder
+				.getContext()
+				.getAuthentication()
+				.getPrincipal();
+		
+		Topic topic = new Topic();
+		topic.setAuthor(loggedUser.getUser());
+		topic.setDate(new Date().getTime());
+		
+		model.addAttribute("topic", topic);
+		
+	    return "editTopic";
+	}
+
+	@PostMapping("/save")
+	public String saveBook(Topic topic) {
+
+		topicRep.save(topic);
+
+		return "redirect:topics";
+	}
+	
+	@PostMapping("/search")
+	public String search(Message message) {
+
+		
+		return "login";
+	}
 
 	/*
 	@GetMapping("/delete/{id}")

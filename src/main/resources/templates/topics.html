@@ -5,30 +5,90 @@
 
 <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"
 	th:href="@{css/bootstrap.min.css}" />
-	
+
 <head>
 <title>Topics</title>
 </head>
 <body>
 
-	<h1>Information for exhange student in Finland</h1>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+		<a class="navbar-brand" href="#"> <img
+			th:src="@{../images/wtf.jpg}" width="60" height="60" alt="">
+		</a>
 
-	<h2>Topics</h1>
+
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+
+				<li sec:authorize="!isAuthenticated()"
+					title="You must be logged to create a topic !" class="nav-item"><a
+					class="nav-link disabled" href="#" aria-disabled="true">Create
+						a topic</a></li>
+
+				<li sec:authorize="isAuthenticated()" class="nav-item active"><a
+					class="nav-link" th:href="@{/createTopic}">Create a topic</a></li>
+			</ul>
+
+		</div>
+
+
+
+		<div class="mr-5">	
+			<form class="form-inline my-2 my-lg-0" action="#" 
+			th:action="@{/search}" th:object="${message}" method="post">
+				<input class="form-control mr-sm-2" type="search"
+					placeholder="Search topic" aria-label="Search" th:field="*{content}">
+				<button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
+			</form>
+		</div>
+		
+		<div sec:authorize="!isAuthenticated()">
+			<a th:href="@{/login}"
+				class="btn btn-primary">Sign in</a>
+		</div>
+		<div sec:authorize="isAuthenticated()">
+			<form th:action="@{/logout}" method="post">
+					<input type="submit" value="Sign Out" class="btn btn-danger" />
+			</form>
+		</div>
+		
+		
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#navbarSupportedContent"
+			aria-controls="navbarSupportedContent" aria-expanded="false"
+			aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+	</nav>
+
+	<h1 class="text-center pb-4 pt-4">Information for exhange students in Finland</h1>
 
 
 	<table class="table table-striped">
 
-		<tr th:each="topic : ${topics}">
-			<td colspan=3>
-			<a th:text="${topic.getTitle()}" th:href="@{/topics/{id}(id=${topic.id})}" class="btn btn-primary"></a>
-			</td>
+		<tr class="bg-dark text-white">
+			<th colspan=6>Topic</th>
+			<th>Author</th>
+			<th>Date</th>
+			<th>Participants</th>
+		</tr>
+
+		<tr th:each="topic : ${topics}" style="cursor: pointer"
+			th:some-field="${topic.id}"
+			onclick="rowClicked(this.getAttribute('some-field'))">
+			<th colspan=6 th:text="${topic.getTitle()}"></th>
 			<td th:text="'Author : ' + ${topic.author.getUsername()}">author...</td>
 			<td th:text="'Posted on ' + ${topic.getDate()}">date...</td>
 			<td th:text="${topic.nbParticipants} + ' people participated'">nbParticipants...</td>
-			<td th:text="${topic.nbFolowers} + ' people folowing'">nbFolowers...</td>
 		</tr>
 	</table>
 
+	<script>
+		function rowClicked(value) {
+			location.href = "/topics/" + value;
+		}
+	</script>
 
 </body>
 </html>
