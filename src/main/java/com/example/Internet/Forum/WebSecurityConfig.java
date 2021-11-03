@@ -1,5 +1,7 @@
 package com.example.Internet.Forum;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -21,15 +23,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				
 		http
 		 .authorizeRequests()
-		 .antMatchers("/topics").permitAll()
+		 .antMatchers("/topics*").permitAll()
 		 .and()
 		 .formLogin()
 		 .loginPage("/login")
-		 .defaultSuccessUrl("/topics", true)
+		 .defaultSuccessUrl("/historyBack/2", false)
 		 .permitAll()
-		.and()
+		 .and()
 		 .logout()
-		 .permitAll();
+		 .logoutSuccessUrl("/historyBack/1");
 		 
 	}
 	

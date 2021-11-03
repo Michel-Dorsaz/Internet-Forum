@@ -118,6 +118,13 @@ public class User {
 		this.responses = responses;
 	}
 
+
+	@Override
+	public String toString() {
+		return "User [username=" + username + ", passwordHash=" + passwordHash + ", email=" + email + ", role=" + role
+				+ "]";
+	}
+
 	
 	
 	 
