@@ -1,5 +1,6 @@
 package com.example.Internet.Forum.domain;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.persistence.Entity;
@@ -71,13 +72,11 @@ public class Response {
 
 	public String getDate() {
 		
-		Calendar.getInstance().setTimeInMillis(date);
+	    SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm");  
+	    
+	    System.out.println(formatter.format(date)); 
 		
-		return Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
-		+ "." 
-		+ (Calendar.getInstance().get(Calendar.MONTH)+1)
-		+ "." 
-		+ Calendar.getInstance().get(Calendar.YEAR);
+		return formatter.format(date);
 	}
 
 

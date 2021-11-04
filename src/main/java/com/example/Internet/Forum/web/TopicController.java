@@ -3,6 +3,7 @@ package com.example.Internet.Forum.web;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.Internet.Forum.domain.LoggedUser;
 import com.example.Internet.Forum.domain.Response;
@@ -27,8 +29,8 @@ import com.example.Internet.Forum.domain.Topic;
 import com.example.Internet.Forum.domain.TopicRepository;
 import com.example.Internet.Forum.domain.User;
 import com.example.Internet.Forum.domain.UserRepository;
-import com.example.Internet.Forum.domain.models.Message;
-import com.example.Internet.Forum.domain.utils.BoyerMooreHorspoolSearch;
+import com.example.Internet.Forum.domain.Message;
+import com.example.Internet.Forum.domain.ToolSet;
 
 @Controller
 public class TopicController {
@@ -65,15 +67,18 @@ public class TopicController {
 		
 		Topic topic1 = new Topic(
 				"Welcome to Finlande",
-				Calendar.getInstance().getTimeInMillis(),
+				new Date().getTime(),
 				2,
 				0,
 				admin
 				);
+	
+		Date d = new Date();
+		d.setYear(100);
 		
 		Topic topic2 = new Topic(
 				"Looking for a room",
-				Calendar.getInstance().getTimeInMillis(),
+				d.getTime(),
 				2,
 				0,
 				user
@@ -158,17 +163,33 @@ public class TopicController {
 	
 		
 	@GetMapping("/topics")
-	public String topiclist(Model model) {
+	public String topiclist(
+			@RequestParam(value = "content", required = false) String filter,
+			Model model) {
+		
 
 		Iterable<Topic> topics = topicRep.findAll();
+		
+		topics = new ToolSet().filter((List<Topic>) topics, filter);
+		
+		Collections.sort((List<Topic>) topics);
 
-		model.addAttribute("topics", topics);
-		model.addAttribute("searchInput", new Message());
+		Message searchInput = new Message();
+		
+		if(filter != null && filter != "")
+			searchInput.setContent(filter);
+		
+		model.addAttribute("searchInput", searchInput);
 		model.addAttribute("responseInput", new Message());
+		model.addAttribute("topics", topics);
+		
 		
 		return "topics";
 	}
 	
+
+
+
 	@GetMapping("/topics/{id}")
 	public String topicdetail(@PathVariable("id") Long topicId, Model model) {
 			
@@ -207,7 +228,6 @@ public class TopicController {
 		
 		Topic topic = new Topic();
 		topic.setAuthor(loggedUser.getUser());
-		topic.setDate(new Date().getTime());
 		
 		model.addAttribute("topic", topic);
 		
@@ -216,42 +236,14 @@ public class TopicController {
 
 	@PostMapping("/save")
 	public String saveBook(Topic topic) {
-
+		
+		topic.setDate(new Date().getTime());
 		topicRep.save(topic);
 
 		return "redirect:topics";
 	}
 	
-	@PostMapping("/search")
-	public String search(Model model, Message searchInput, Message responseInput) {
-		
-		if(searchInput.getContent().length() == 0) {
-			return "redirect:topics";
-		}
 
-		
-		Iterable<Topic> topics = topicRep.findAll();
-		List<Topic> matchingTopics = new ArrayList<Topic>();
-		
-		for(Topic t : topics) {
-			
-			int position = new BoyerMooreHorspoolSearch()
-					.find(t.getTitle().toLowerCase(),searchInput.getContent().toLowerCase());
-			
-			
-			if(position != -1) {
-				matchingTopics.add(t);
-
-			}
-			
-		}
-		
-		model.addAttribute("topics", matchingTopics);
-		model.addAttribute("searchInput", searchInput);
-		model.addAttribute("responseInput", responseInput);
-		
-		return "topics";
-	}
 
 	/*
 	@GetMapping("/delete/{id}")

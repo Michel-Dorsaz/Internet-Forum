@@ -1,5 +1,8 @@
 package com.example.Internet.Forum.domain;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -16,8 +19,9 @@ import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+
 @Entity
-public class Topic {
+public class Topic implements Comparable<Topic>{
 	
 	
 	@Id
@@ -77,15 +81,17 @@ public class Topic {
 	}
 
 
+	public long getDateLong() {
+		return this.date;
+	}
+	
 	public String getDate() {
+ 
+	    SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");  
+  
+	    System.out.println(formatter.format(date)); 
 		
-		Calendar.getInstance().setTimeInMillis(date);
-		
-		return Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
-		+ "." 
-		+ (Calendar.getInstance().get(Calendar.MONTH)+1)
-		+ "." 
-		+ Calendar.getInstance().get(Calendar.YEAR);
+		return formatter.format(date);
 	}
 
 
@@ -131,6 +137,13 @@ public class Topic {
 
 	public void setAuthor(User author) {
 		this.author = author;
+	}
+
+
+	@Override
+	public int compareTo(Topic o) {
+		
+		return (int) (this.getDateLong()-o.getDateLong());
 	}
 	
 	

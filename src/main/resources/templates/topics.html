@@ -35,7 +35,7 @@
 
 		<div class="mr-5">	
 			<form class="form-inline my-2 my-lg-0" action="#" 
-			th:action="@{/search}" th:object="${searchInput}" method="post">
+			th:action="@{/topics}" th:object="${searchInput}" method="get">
 				<input id="userSearch" class="form-control mr-sm-2" type="search"
 					placeholder="Search topic" aria-label="Search" th:field="*{content}">
 				<button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
@@ -93,7 +93,7 @@
 				function(event){
 				  if(event.type === "search"){
 					  if(event.currentTarget.value === ""){
-						  window.location.href = window.location + '/../topics';
+						  window.location.href = '/topics';
 					  }
 					  
 				  }

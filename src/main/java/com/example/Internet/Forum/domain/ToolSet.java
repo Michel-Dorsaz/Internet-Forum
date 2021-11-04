@@ -1,4 +1,7 @@
-package com.example.Internet.Forum.domain.utils;
+package com.example.Internet.Forum.domain;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementation of the Boyer-Moore-Horspool search algorithm. Implementation
@@ -14,9 +17,34 @@ package com.example.Internet.Forum.domain.utils;
  * 
  *
  */
-public class BoyerMooreHorspoolSearch {
+public class ToolSet {
+	
+	public List<Topic> filter(List<Topic> topics, String filter) {
+		
+		if(filter == null || filter.length() == 0) {
+			return topics;
+		}
+	
+		List<Topic> matchingTopics = new ArrayList<Topic>();
+		
+		for(Topic t : topics) {
+			
+			int position = BoyerMooreHorspoolSearch(
+					t.getTitle().toLowerCase(), 
+					filter.toLowerCase()
+					);
+			
+			
+			if(position != -1) {
+				matchingTopics.add(t);
+			}
+			
+		}
+		
+		return matchingTopics;
+	}
 
-	public int find(String T, String P) {
+	public int BoyerMooreHorspoolSearch(String T, String P) {
 		int[] lastOcc;
 		int i0, j, m, n;
 

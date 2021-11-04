@@ -1,4 +1,4 @@
-package com.example.Internet.Forum.domain.models;
+package com.example.Internet.Forum.domain;
 
 public class Message {
 	
