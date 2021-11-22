@@ -125,8 +125,21 @@ div.fixed {
 			</tr>
 			<tr class="border-bottom">
 				<td th:text="${response.getDate()}">date...</td>
-				<td th:text="${response.nbLike} + '👍'">likes...</td>
-				<td th:text="${response.nbDislike} + '👎'">dislikes...</td>
+				
+				<td sec:authorize="isAuthenticated()">
+					<a th:href="@{${#httpServletRequest.requestURI} + '?liked=' + ${response.getId()}}" th:text="${response.nbLike} + '👍'"></a>
+				</td>
+				<td sec:authorize="!isAuthenticated()" >
+					<a th:text="${response.nbLike} + '👍'" onClick="logInAlert()"></a>
+				</td>
+				
+				<td sec:authorize="isAuthenticated()">
+					<a th:href="@{${#httpServletRequest.requestURI} + '?disliked=' + ${response.getId()}}" th:text="${response.nbDislike} + '👎'"></a>
+				</td>
+				<td sec:authorize="!isAuthenticated()" >
+					<a th:text="${response.nbDislike} + '👎'" onClick="logInAlert()"></a>
+				</td>
+
 			</tr>
 		</div>
 
@@ -194,6 +207,11 @@ div.fixed {
 					  
 				  }
 				});
+		
+		
+		function logInAlert() {
+			alert("You must be logged in to use that function !");
+		}
 	</script>
 
 </body>

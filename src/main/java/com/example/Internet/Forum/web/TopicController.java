@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.Internet.Forum.domain.LikeDislike;
+import com.example.Internet.Forum.domain.LikeDislikeRepository;
 import com.example.Internet.Forum.domain.LoggedUser;
 import com.example.Internet.Forum.domain.Response;
 import com.example.Internet.Forum.domain.ResponseRepository;
@@ -156,6 +158,9 @@ public class TopicController {
 	
 	@Autowired
 	private UserRepository userRep;
+	
+	@Autowired
+	private LikeDislikeRepository likeDislikeRep;
 
 	@GetMapping("/login")
 	public String loginPage(Model model) {
@@ -194,19 +199,35 @@ public class TopicController {
 	@GetMapping("/topics/{id}")
 	public String topicdetail(
 			@RequestParam(value = "content", required = false) String filter,
+			@RequestParam(value = "liked", required = false) Long responseLiked,
+			@RequestParam(value = "disliked", required = false) Long responseDisliked,
 			@PathVariable("id") Long topicId,			
 			Model model) {
-			
+
 		
 		Optional<Topic> topic = topicRep.findById(topicId);
 		
 		if(topic.isPresent()) {
 			
+			try {
+				
+				if(responseLiked != null) {
+					like(responseLiked);
+				}
+				if(responseDisliked != null) {
+					dislike(responseDisliked);
+				}
+			}
+			catch(ClassCastException e) {
+				
+				model.addAttribute("errorMessage", "Error accessing restricted functionality to logged users");
+				return "error";
+			}
+			
 			List<Response> responses = responseRep.findByTopic((Topic) topic.get());
 			
 			responses = new ToolSet().filter(responses, filter);
-			
-			
+				
 			Collections.sort(responses);
 			
 			Message searchInput = new Message();
@@ -222,7 +243,7 @@ public class TopicController {
 			return "topicDetail";
 		}
 		
-
+		model.addAttribute("errorMessage", "Error while retrieving topic");
 		return "error";
 	}
 	
@@ -234,17 +255,18 @@ public class TopicController {
 		Optional<Topic> oTopic = topicRep.findById(topicId);
 		
 		Topic topic = new Topic();
+		
 		if(oTopic.isPresent()) {
 			topic = oTopic.get();
 		}
 		
+		try {
+			
 		LoggedUser loggedUser = (LoggedUser) SecurityContextHolder
 				.getContext()
 				.getAuthentication()
 				.getPrincipal();
-			
-		
-		try {
+
 			
 			Response newResponse = new Response(
 					input.getContent(), 
@@ -257,10 +279,15 @@ public class TopicController {
 		
 			responseRep.save(newResponse);
 		}
+		catch(ClassCastException e) {
+			
+			model.addAttribute("errorMessage", "Error accessing restricted functionality to logged users");
+			return "error";
+		}
 		catch(Exception e) {
 			
-			//TODO ERROR HANDLING OTHER SAVE
-			return "login";
+			model.addAttribute("errorMessage", "Error while saving response");
+			return "error";
 			
 		}
 		
@@ -287,17 +314,25 @@ public class TopicController {
 	@GetMapping("/createTopic")
 	public String createTopic(Model model) {
 		
-		LoggedUser loggedUser = (LoggedUser) SecurityContextHolder
-				.getContext()
-				.getAuthentication()
-				.getPrincipal();
-		
-		Topic topic = new Topic();
-		topic.setAuthor(loggedUser.getUser());
-		
-		model.addAttribute("topic", topic);
-		
-	    return "editTopic";
+		try {
+			LoggedUser loggedUser = (LoggedUser) SecurityContextHolder
+					.getContext()
+					.getAuthentication()
+					.getPrincipal();
+			
+			Topic topic = new Topic();
+			topic.setAuthor(loggedUser.getUser());
+			
+			model.addAttribute("topic", topic);
+			
+		    return "editTopic";
+		}
+		catch(ClassCastException e) {
+			
+			model.addAttribute("errorMessage", "Error accessing restricted functionality to logged users");
+			return "error";
+		}
+
 	}
 
 	@PostMapping("/save")
@@ -309,47 +344,100 @@ public class TopicController {
 		return "redirect:topics";
 	}
 	
+	
+	public void like(long responseId) throws ClassCastException {
+		
+		
+		try {
+			
+			LoggedUser loggedUser = (LoggedUser) SecurityContextHolder
+					.getContext()
+					.getAuthentication()
+					.getPrincipal();
+			
+			Optional<Response> oResponse = responseRep.findById(responseId);
+			
+			if(oResponse.isEmpty()) {
+				return;
+			}
+			
+			Response response = oResponse.get();
+			
+			LikeDislike responseElement = likeDislikeRep.findByResponseIdAndUserId(responseId, loggedUser.getUser().getId());
+			
+			if(responseElement == null) {
+				responseElement = new LikeDislike(true, loggedUser.getUser().getId(), responseId);	
+				
+			}
+			else if(responseElement.isLiked()) {
+				likeDislikeRep.delete(responseElement);
+				
+				response.setNbLike(response.getNbLike()-1);
+				responseRep.save(response);
+				return;
+			}
+			else if(!responseElement.isLiked()) {
+				responseElement.setLiked(true);
+				
+				response.setNbDislike(response.getNbDislike()-1);		
+			}
 
-
-	/*
-	@GetMapping("/delete/{id}")
-
-	public String deleteBook(@PathVariable("id") Long bookId, Model model) {
-
-		bookRepository.deleteById(bookId);
-
-		return "redirect:../booklist";
+					
+			likeDislikeRep.save(responseElement);			
+			response.setNbLike(response.getNbLike()+1);	
+			responseRep.save(response);	
+		}
+		catch(ClassCastException e) {
+			throw e;
+		}
+		
 	}
+	
+	public void dislike(long responseId) throws ClassCastException{
+		
+		try {
 
-	@GetMapping("/add")
-	public String addBook(Model model) {
-
-		model.addAttribute("book", new Book());
-		model.addAttribute("categories", categoryRepository.findAll());
-
-		return "addbook";
+			LoggedUser loggedUser = (LoggedUser) SecurityContextHolder
+					.getContext()
+					.getAuthentication()
+					.getPrincipal();
+			
+			Optional<Response> oResponse = responseRep.findById(responseId);
+			
+			if(oResponse.isEmpty()) {
+				return;
+			}
+			
+			Response response = oResponse.get();
+			
+			LikeDislike responseElement = likeDislikeRep.findByResponseIdAndUserId(responseId, loggedUser.getUser().getId());
+			
+			if(responseElement == null) {
+				responseElement = new LikeDislike(false, loggedUser.getUser().getId(), responseId);	
+				
+			}
+			else if(!responseElement.isLiked()) {
+				likeDislikeRep.delete(responseElement);
+				
+				response.setNbDislike(response.getNbDislike()-1);
+				responseRep.save(response);
+				return;
+			}
+			else if(responseElement.isLiked()) {
+				responseElement.setLiked(false);
+				
+				response.setNbLike(response.getNbLike()-1);		
+			}
+				
+			likeDislikeRep.save(responseElement);
+			response.setNbDislike(response.getNbDislike()+1);	
+			responseRep.save(response);	
+			
+		}catch(ClassCastException e) {
+			throw e;
+		}
 	}
+	
+	
 
-	@GetMapping("/edit/{id}")
-	public String editBook(@PathVariable("id") Long bookId, Model model) {
-
-		Optional<Book> book = bookRepository.findById(bookId);
-
-		if (book.isEmpty())
-			return "redirect:../booklist";
-
-		model.addAttribute("book", book.get());
-		model.addAttribute("categories", categoryRepository.findAll());
-
-		return "editbook";
-	}
-
-	@PostMapping("/save")
-	public String saveBook(Book book) {
-
-		bookRepository.save(book);
-
-		return "redirect:booklist";
-	}
-	*/
 }
