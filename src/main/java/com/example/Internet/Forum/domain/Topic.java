@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Entity
-public class Topic implements Comparable<Topic>{
+public class Topic implements Post, Comparable<Topic>{
 	
 	
 	@Id
@@ -88,8 +88,7 @@ public class Topic implements Comparable<Topic>{
 	public String getDate() {
  
 	    SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");  
-  
-	    System.out.println(formatter.format(date)); 
+
 		
 		return formatter.format(date);
 	}
@@ -140,12 +139,42 @@ public class Topic implements Comparable<Topic>{
 	}
 
 
+	/**
+	 * Topics are sorted by date, latest on top.
+	 */
 	@Override
 	public int compareTo(Topic o) {
 		
-		return (int) (this.getDateLong()-o.getDateLong());
+		return (int) (o.getDateLong()-this.getDateLong());
 	}
-	
-	
+
+
+
+
+	@Override
+	public String getContent() {
+		
+		return title;
+	}
+
+
+
+
+	@Override
+	public boolean isTopic() {
+		
+		return true;
+	}
+
+
+
+
+	@Override
+	public boolean isResponse() {
+		
+		return false;
+	}
+
+
 	
 }

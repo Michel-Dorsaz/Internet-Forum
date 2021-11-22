@@ -93,7 +93,7 @@
 				function(event){
 				  if(event.type === "search"){
 					  if(event.currentTarget.value === ""){
-						  window.location.href = '/topics';
+						  window.location.href = location.origin + location.pathname;
 					  }
 					  
 				  }

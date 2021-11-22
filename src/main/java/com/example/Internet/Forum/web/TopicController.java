@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.h2.jdbc.JdbcSQLDataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +31,7 @@ import com.example.Internet.Forum.domain.TopicRepository;
 import com.example.Internet.Forum.domain.User;
 import com.example.Internet.Forum.domain.UserRepository;
 import com.example.Internet.Forum.domain.Message;
+import com.example.Internet.Forum.domain.Post;
 import com.example.Internet.Forum.domain.ToolSet;
 
 @Controller
@@ -168,9 +170,9 @@ public class TopicController {
 			Model model) {
 		
 
-		Iterable<Topic> topics = topicRep.findAll();
+		List<Topic> topics = (List<Topic>) topicRep.findAll();
 		
-		topics = new ToolSet().filter((List<Topic>) topics, filter);
+		topics = new ToolSet().filter(topics, filter);
 		
 		Collections.sort((List<Topic>) topics);
 
@@ -180,7 +182,6 @@ public class TopicController {
 			searchInput.setContent(filter);
 		
 		model.addAttribute("searchInput", searchInput);
-		model.addAttribute("responseInput", new Message());
 		model.addAttribute("topics", topics);
 		
 		
@@ -191,7 +192,10 @@ public class TopicController {
 
 
 	@GetMapping("/topics/{id}")
-	public String topicdetail(@PathVariable("id") Long topicId, Model model) {
+	public String topicdetail(
+			@RequestParam(value = "content", required = false) String filter,
+			@PathVariable("id") Long topicId,			
+			Model model) {
 			
 		
 		Optional<Topic> topic = topicRep.findById(topicId);
@@ -200,7 +204,19 @@ public class TopicController {
 			
 			List<Response> responses = responseRep.findByTopic((Topic) topic.get());
 			
+			responses = new ToolSet().filter(responses, filter);
+			
+			
+			Collections.sort(responses);
+			
+			Message searchInput = new Message();
+			
+			if(filter != null && filter != "")
+				searchInput.setContent(filter);
+			
 			model.addAttribute("responses", responses);
+			model.addAttribute("searchInput", searchInput);
+			model.addAttribute("responseInput", new Message());
 			model.addAttribute("topic", (Topic) topic.get());
 				
 			return "topicDetail";
@@ -208,6 +224,56 @@ public class TopicController {
 		
 
 		return "error";
+	}
+	
+	@PostMapping("/topics/{id}")
+	public String topicdetailResponse(
+			@PathVariable("id") Long topicId, 
+			Model model, Message input) {
+		
+		Optional<Topic> oTopic = topicRep.findById(topicId);
+		
+		Topic topic = new Topic();
+		if(oTopic.isPresent()) {
+			topic = oTopic.get();
+		}
+		
+		LoggedUser loggedUser = (LoggedUser) SecurityContextHolder
+				.getContext()
+				.getAuthentication()
+				.getPrincipal();
+			
+		
+		try {
+			
+			Response newResponse = new Response(
+					input.getContent(), 
+					new Date().getTime(), 
+					0, 0, 
+					loggedUser.getUser(),
+					topic
+					);
+
+		
+			responseRep.save(newResponse);
+		}
+		catch(Exception e) {
+			
+			//TODO ERROR HANDLING OTHER SAVE
+			return "login";
+			
+		}
+		
+		
+		List<Response> responses = responseRep.findByTopic(topic);
+		
+		model.addAttribute("responses", responses);
+		model.addAttribute("searchInput", new Message());
+		model.addAttribute("responseInput", new Message());
+		model.addAttribute("topic", topic);
+			
+		return "topicDetail";
+
 	}
 
 	@GetMapping("/historyBack/{id}")

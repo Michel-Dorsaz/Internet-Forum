@@ -65,9 +65,10 @@ div.fixed {
 
 
 		<div class="mr-5">
-			<form class="form-inline my-2 my-lg-0">
-				<input class="form-control mr-sm-2" type="search"
-					placeholder="Search response" aria-label="Search">
+			<form class="form-inline my-2 my-lg-0" action="#" 
+			th:action="@{${#httpServletRequest.requestURI}}" th:object="${searchInput}" method="get">
+				<input id="userSearch" class="form-control mr-sm-2" type="search"
+					placeholder="Search a response" aria-label="Search" th:field="*{content}">
 				<button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
 			</form>
 		</div>
@@ -120,7 +121,7 @@ div.fixed {
 
 			</tr>
 			<tr>
-				<th th:text="${response.content}">content...</th>
+				<th th:utext="${response.content}">content...</th>
 			</tr>
 			<tr class="border-bottom">
 				<td th:text="${response.getDate()}">date...</td>
@@ -133,22 +134,24 @@ div.fixed {
 
 
 	<div sec:authorize="isAuthenticated()"
-		class="fixed bg-white text-center" id="footer">
-		<h3 class="header mousePointer">Click here to add your response</h3>
+		class="header fixed bg-white text-center" id="footer">
 
 		<div class="content collapsed">
-
+			
 			<div class="container mt-4 mb-4">
+				<h4>Write your response :</h1>
 				<div class="row justify-content-md-center">
-					<div class="col-md-12 col-lg-8">
+					<form class="col-md-12 col-lg-8" 
+					th:action="@{${#httpServletRequest.requestURI}}" th:object="${responseInput}" method="post">
 						<div class="form-group">
-							<textarea id="editor"></textarea>
+							<textarea id="editor" th:field="*{content}"></textarea>
 						</div>
 						<button type="submit" class="btn btn-primary">Submit</button>
+					</form>
 					</div>
 				</div>
 			</div>
-d		</div>
+		</div>
 
 	</div>
 
@@ -172,7 +175,7 @@ d		</div>
 		});
 
 		function footerSwitch() {
-			var content = document.getElementById("footer").children[1];
+			var content = document.getElementById("footer").children[0];
 
 			if (content.classList.contains('collapsed')) {
 				content.classList.remove('collapsed');
@@ -180,6 +183,17 @@ d		</div>
 				content.classList.toggle('collapsed');
 			}
 		}
+
+		document.getElementById("userSearch").addEventListener("search", 
+				function(event){
+				  if(event.type === "search"){
+					  if(event.currentTarget.value === ""){
+						  
+						  window.location.href = location.origin + location.pathname;
+					  }
+					  
+				  }
+				});
 	</script>
 
 </body>

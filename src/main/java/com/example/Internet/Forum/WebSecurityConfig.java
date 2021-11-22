@@ -31,7 +31,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		 .permitAll()
 		 .and()
 		 .logout()
-		 .logoutSuccessUrl("/historyBack/1");
+		 .logoutSuccessUrl("/topics");
 		 
 	}
 	

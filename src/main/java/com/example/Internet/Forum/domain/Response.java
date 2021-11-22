@@ -11,7 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Response {
+public class Response implements Post, Comparable<Response>{
 	
 	
 	@Id
@@ -69,12 +69,13 @@ public class Response {
 		this.content = content;
 	}
 
+	public long getDateLong() {
+		return date;
+	}
 
 	public String getDate() {
 		
 	    SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm");  
-	    
-	    System.out.println(formatter.format(date)); 
 		
 		return formatter.format(date);
 	}
@@ -122,6 +123,32 @@ public class Response {
 
 	public void setTopic(Topic topic) {
 		this.topic = topic;
+	}
+
+
+
+	@Override
+	public int compareTo(Response o) {
+		
+		return (int) (this.getDateLong()-o.getDateLong());
+	}
+
+
+
+
+	@Override
+	public boolean isTopic() {
+		
+		return false;
+	}
+
+
+
+
+	@Override
+	public boolean isResponse() {
+		
+		return true;
 	}
 	
 	
