@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"
+	th:href="@{css/bootstrap.min.css}" />
+
+<head>
+<title>Error</title>
+
+<style type="text/css">
+div.wrapper {
+    position: absolute;
+    top:  50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+</style>
+</head>
+<body>
+
+	
+	<div class="wrapper">
+<h1>An error occured</h1>
+<p class="row align-items-center justify-content-center" th:text="${errorMessage}"></p>
+	<div class="row align-items-center justify-content-center">
+	
+	<button type="button" onClick="back()">Return</button>
+	</div>
+</div>
+	<script>
+	
+	function back() {
+			history.back(2);
+	}
+	
+	</script>
+</body>
+</html>
