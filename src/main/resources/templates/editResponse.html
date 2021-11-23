@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+
+<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"
+	th:href="@{../../../css/bootstrap.min.css}" />
+
+<head>
+<title>Edit reponse</title>
+<style type="text/css">
+div.wrapper {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+</style>
+</head>
+<body>
+
+	<div class="container mt-4 mb-4">
+		<h4 class="row justify-content-md-center">
+			Edit your response :
+			</h4>
+			<div class="row justify-content-md-center">
+				<form class="col-md-12 col-lg-8" th:object="${response}"
+					th:action="@{/saveEditedResponse}" action="#" method="post">
+					<div class="form-group">
+						<textarea id="editor" th:field="*{content}"></textarea>
+						<input type="hidden" id="id" th:field="*{id}" readonly="readonly" />
+						<input type="hidden" id="author" th:field="*{author}"
+							readonly="readonly" />
+					</div>
+					<button type="submit" class="btn btn-primary">Submit</button>
+					<a class="btn btn-warning" onClick="cancel()">Cancel</a>
+				</form>
+			</div>
+
+			<script
+				src="https://cdn.tiny.cloud/1/xcutwhg1v409nkcausd265uz2522o3qznd8xw7m7nu401rnl/tinymce/5/tinymce.min.js"
+				referrerpolicy="origin"></script>
+
+			<script>
+				tinymce.init({
+					selector : 'textarea#editor',
+					menubar : false
+				});
+				
+				function cancel() {
+					history.go(-1);
+				}
+			</script>
+</body>
+</html>

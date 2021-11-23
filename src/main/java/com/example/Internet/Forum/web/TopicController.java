@@ -1,6 +1,7 @@
 package com.example.Internet.Forum.web;
 
 import java.security.Principal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -68,7 +69,6 @@ public class TopicController {
 				"Welcome to Finlande",
 				new Date().getTime(),
 				2,
-				0,
 				admin
 				);
 	
@@ -79,7 +79,6 @@ public class TopicController {
 				"Looking for a room",
 				d.getTime(),
 				2,
-				0,
 				user
 				);
 		
@@ -167,7 +166,8 @@ public class TopicController {
 	@GetMapping("/topics")
 	public String topiclist(
 			@RequestParam(value = "content", required = false) String filter,
-			Model model) {
+			Model model,
+			Message searchInput2) {
 		
 
 		List<Topic> topics = (List<Topic>) topicRep.findAll();
@@ -330,12 +330,35 @@ public class TopicController {
 
 	}
 
-	@PostMapping("/save")
+	@PostMapping("/saveTopic")
 	public String saveTopic(Topic topic) {
 		
 		topic.setDate(new Date().getTime());
 		topicRep.save(topic);
 
+		return "redirect:topics";
+	}
+	
+	@PostMapping("/saveEditedResponse")
+	public String saveResponse(Response newResponse, Model model) {
+		
+		Optional<Response> oResponse = responseRep.findById(newResponse.getId());
+		
+		Response response = null;
+		
+		if(oResponse.isPresent()) {
+			
+			response = oResponse.get();
+			
+			SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm");  
+			
+			response.setContent(newResponse.getContent() + 
+					" (modified on " + formatter.format(new Date().getTime()) + ")");
+
+		}		
+		
+		responseRep.save(response);
+		
 		return "redirect:topics";
 	}
 	
@@ -357,7 +380,7 @@ public class TopicController {
 				if(
 						loggedUser.getUser().getId() != topic.getAuthor().getId() 
 						&& 
-						!loggedUser.getUser().getRole().contentEquals("Admin")) {
+						!loggedUser.getUser().getRole().contentEquals("ADMIN")) {
 					
 					model.addAttribute("errorMessage", "Error trying to edit topic from someone else");
 					return "error";
@@ -387,11 +410,13 @@ public class TopicController {
 	@GetMapping("/topics/delete/{id}")
 	public String deleteTopic(@PathVariable("id") long topicId, Model model) {
 		
+		
 		try {
 			LoggedUser loggedUser = (LoggedUser) SecurityContextHolder
 					.getContext()
 					.getAuthentication()
 					.getPrincipal();
+			
 			
 			Optional<Topic> oTopic = topicRep.findById(topicId);
 			
@@ -399,7 +424,7 @@ public class TopicController {
 				
 				Topic topic = oTopic.get();
 				
-				if(!loggedUser.getUser().getRole().contentEquals("Admin")) {
+				if(!loggedUser.getUser().getRole().contentEquals("ADMIN")) {
 					
 					model.addAttribute("errorMessage", "Error accessing restricted functionality to admins");
 					return "error";
@@ -408,13 +433,103 @@ public class TopicController {
 				else {
 									
 					topicRep.delete(topic);			
-				    return "topics";
+				    return "redirect:../../topics";
 				}
 				
 
 			}
 			else {
 				model.addAttribute("errorMessage", "Error while trying to retrieve topic");
+				return "error";
+			}
+
+		}
+		catch(ClassCastException e) {
+			
+			model.addAttribute("errorMessage", "Error accessing restricted functionality to admins");
+			return "error";
+		}
+	}
+
+	@GetMapping("/topics/response/edit/{id}")
+	public String editResponse(@PathVariable("id") long responseId, Model model) {
+		
+		try {
+			LoggedUser loggedUser = (LoggedUser) SecurityContextHolder
+					.getContext()
+					.getAuthentication()
+					.getPrincipal();
+			
+			Optional<Response> oResponse = responseRep.findById(responseId);
+			
+			if(oResponse.isPresent()) {
+				
+				Response response = oResponse.get();
+				
+				if(
+						loggedUser.getUser().getId() != response.getAuthor().getId() 
+						&& 
+						!loggedUser.getUser().getRole().contentEquals("ADMIN")) {
+					
+					model.addAttribute("errorMessage", "Error trying to edit reponse from someone else");
+					return "error";
+					
+				}
+				else {
+									
+					model.addAttribute("response", response);				
+				    return "editResponse";
+				}
+				
+
+			}
+			else {
+				model.addAttribute("errorMessage", "Error while trying to retrieve response");
+				return "error";
+			}
+
+		}
+		catch(ClassCastException e) {
+			
+			model.addAttribute("errorMessage", "Error accessing restricted functionality to logged users");
+			return "error";
+		}
+	}
+	
+	@GetMapping("/topics/response/delete/{id}")
+	public String deleteResponse(@PathVariable("id") long responseId, Model model) {
+		
+		try {
+			LoggedUser loggedUser = (LoggedUser) SecurityContextHolder
+					.getContext()
+					.getAuthentication()
+					.getPrincipal();
+			
+			Optional<Response> oResponse = responseRep.findById(responseId);
+			
+			if(oResponse.isPresent()) {
+				
+				Response response = oResponse.get();
+				
+				if(!loggedUser.getUser().getRole().contentEquals("ADMIN")) {
+					
+					model.addAttribute("errorMessage", "Error accessing restricted functionality to admins");
+					return "error";
+					
+				}
+				else {
+									
+					responseRep.delete(response);	
+					
+					model.addAttribute("pagesBack", -1);
+
+					return "historyBack";
+				}
+				
+
+			}
+			else {
+				model.addAttribute("errorMessage", "Error while trying to retrieve response");
 				return "error";
 			}
 

@@ -30,7 +30,7 @@ public class Topic implements Post, Comparable<Topic>{
 	
 	private String title;
 	private long date;
-	private int nbParticipants, nbFolowers;
+	private int nbParticipants;
 	
 	@ManyToOne
 	@JoinColumn(name = "user_id")
@@ -50,11 +50,10 @@ public class Topic implements Post, Comparable<Topic>{
 	
 
 
-	public Topic(String title, long date, int nbParticipants, int nbFolowers, User author) {
+	public Topic(String title, long date, int nbParticipants, User author) {
 		this.title = title;
 		this.date = date;
 		this.nbParticipants = nbParticipants;
-		this.nbFolowers = nbFolowers;
 		this.author = author;
 	}
 
@@ -108,15 +107,6 @@ public class Topic implements Post, Comparable<Topic>{
 		this.nbParticipants = nbParticipants;
 	}
 
-
-	public int getNbFolowers() {
-		return nbFolowers;
-	}
-
-
-	public void setNbFolowers(int nbFolowers) {
-		this.nbFolowers = nbFolowers;
-	}
 
 
 	public List<Response> getResponses() {

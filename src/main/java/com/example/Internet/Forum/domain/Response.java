@@ -69,11 +69,11 @@ public class Response implements Post, Comparable<Response>{
 		this.content = content;
 	}
 
-	public long getDateLong() {
+	public long getDate() {
 		return date;
 	}
 
-	public String getDate() {
+	public String getDateString() {
 		
 	    SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm");  
 		
@@ -130,7 +130,7 @@ public class Response implements Post, Comparable<Response>{
 	@Override
 	public int compareTo(Response o) {
 		
-		return (int) (this.getDateLong()-o.getDateLong());
+		return (int) (this.getDate()-o.getDate());
 	}
 
 

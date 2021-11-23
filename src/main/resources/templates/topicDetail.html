@@ -65,10 +65,12 @@ div.fixed {
 
 
 		<div class="mr-5">
-			<form class="form-inline my-2 my-lg-0" action="#" 
-			th:action="@{${#httpServletRequest.requestURI}}" th:object="${searchInput}" method="get">
+			<form class="form-inline my-2 my-lg-0" action="#"
+				th:action="@{${#httpServletRequest.requestURI}}"
+				th:object="${searchInput}" method="get">
 				<input id="userSearch" class="form-control mr-sm-2" type="search"
-					placeholder="Search a response" aria-label="Search" th:field="*{content}">
+					placeholder="Search a response" aria-label="Search"
+					th:field="*{content}">
 				<button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
 			</form>
 		</div>
@@ -124,21 +126,33 @@ div.fixed {
 				<th th:utext="${response.content}">content...</th>
 			</tr>
 			<tr class="border-bottom">
-				<td th:text="${response.getDate()}">date...</td>
-				
-				<td sec:authorize="isAuthenticated()">
-					<a th:href="@{${#httpServletRequest.requestURI} + '?liked=' + ${response.getId()}}" th:text="${response.nbLike} + '👍'"></a>
+				<td th:text="${response.getDateString()}">date...</td>
+
+				<td sec:authorize="isAuthenticated()"><a
+					th:href="@{${#httpServletRequest.requestURI} + '?liked=' + ${response.getId()}}"
+					th:text="${response.nbLike} + '👍'"></a></td>
+				<td sec:authorize="!isAuthenticated()"><a
+					th:text="${response.nbLike} + '👍'" onClick="logInAlert()"></a></td>
+
+				<td sec:authorize="isAuthenticated()"><a
+					th:href="@{${#httpServletRequest.requestURI} + '?disliked=' + ${response.getId()}}"
+					th:text="${response.nbDislike} + '👎'"></a></td>
+				<td sec:authorize="!isAuthenticated()"><a
+					th:text="${response.nbDislike} + '👎'" onClick="logInAlert()"></a>
 				</td>
-				<td sec:authorize="!isAuthenticated()" >
-					<a th:text="${response.nbLike} + '👍'" onClick="logInAlert()"></a>
-				</td>
-				
-				<td sec:authorize="isAuthenticated()">
-					<a th:href="@{${#httpServletRequest.requestURI} + '?disliked=' + ${response.getId()}}" th:text="${response.nbDislike} + '👎'"></a>
-				</td>
-				<td sec:authorize="!isAuthenticated()" >
-					<a th:text="${response.nbDislike} + '👎'" onClick="logInAlert()"></a>
-				</td>
+
+				<td sec:authorize="isAuthenticated()"
+					th:if="${#authentication.getPrincipal().getUser().getRole().equals('ADMIN') OR response.author.getId().equals(#authentication.getPrincipal().getUser().getId())}"><a
+					th:href="@{response/edit/{id}(id=${response.id})}"
+					class="btn btn-primary">Edit</a></td>
+				<td sec:authorize="hasAuthority('ADMIN')"><a
+					th:href="@{response/delete/{id}(id=${response.id})}"
+					class="btn btn-danger" onClick="validate()">Delete</a></td>
+
+				<td sec:authorize="isAuthenticated()"
+					th:if="${!#authentication.getPrincipal().getUser().getRole().equals('ADMIN') AND !response.author.getId().equals(#authentication.getPrincipal().getUser().getId())}" />
+				<td sec:authorize="!isAuthenticated()" />
+				<td sec:authorize="!hasAuthority('ADMIN')" />
 
 			</tr>
 		</div>
@@ -150,21 +164,24 @@ div.fixed {
 		class="header fixed bg-white text-center" id="footer">
 
 		<div class="content collapsed">
-			
+
 			<div class="container mt-4 mb-4">
-				<h4>Write your response :</h1>
-				<div class="row justify-content-md-center">
-					<form class="col-md-12 col-lg-8" 
-					th:action="@{${#httpServletRequest.requestURI}}" th:object="${responseInput}" method="post">
-						<div class="form-group">
-							<textarea id="editor" th:field="*{content}"></textarea>
-						</div>
-						<button type="submit" class="btn btn-primary">Submit</button>
-					</form>
+				<h4>
+					Write your response :
+					</h4>
+					<div class="row justify-content-md-center">
+						<form class="col-md-12 col-lg-8"
+							th:action="@{${#httpServletRequest.requestURI}}"
+							th:object="${responseInput}" method="post">
+							<div class="form-group">
+								<textarea id="editor" th:field="*{content}"></textarea>
+							</div>
+							<button type="submit" class="btn btn-primary">Submit</button>
+						</form>
 					</div>
-				</div>
 			</div>
 		</div>
+	</div>
 
 	</div>
 
@@ -197,18 +214,19 @@ div.fixed {
 			}
 		}
 
-		document.getElementById("userSearch").addEventListener("search", 
-				function(event){
-				  if(event.type === "search"){
-					  if(event.currentTarget.value === ""){
-						  
-						  window.location.href = location.origin + location.pathname;
-					  }
-					  
-				  }
+		document.getElementById("userSearch").addEventListener(
+				"search",
+				function(event) {
+					if (event.type === "search") {
+						if (event.currentTarget.value === "") {
+
+							window.location.href = location.origin
+									+ location.pathname;
+						}
+
+					}
 				});
-		
-		
+
 		function logInAlert() {
 			alert("You must be logged in to use that function !");
 		}
