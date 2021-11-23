@@ -384,7 +384,47 @@ public class TopicController {
 		}
 	}
 	
-	
+	@GetMapping("/topics/delete/{id}")
+	public String deleteTopic(@PathVariable("id") long topicId, Model model) {
+		
+		try {
+			LoggedUser loggedUser = (LoggedUser) SecurityContextHolder
+					.getContext()
+					.getAuthentication()
+					.getPrincipal();
+			
+			Optional<Topic> oTopic = topicRep.findById(topicId);
+			
+			if(oTopic.isPresent()) {
+				
+				Topic topic = oTopic.get();
+				
+				if(!loggedUser.getUser().getRole().contentEquals("Admin")) {
+					
+					model.addAttribute("errorMessage", "Error accessing restricted functionality to admins");
+					return "error";
+					
+				}
+				else {
+									
+					topicRep.delete(topic);			
+				    return "topics";
+				}
+				
+
+			}
+			else {
+				model.addAttribute("errorMessage", "Error while trying to retrieve topic");
+				return "error";
+			}
+
+		}
+		catch(ClassCastException e) {
+			
+			model.addAttribute("errorMessage", "Error accessing restricted functionality to admins");
+			return "error";
+		}
+	}
 	
 	
 	
