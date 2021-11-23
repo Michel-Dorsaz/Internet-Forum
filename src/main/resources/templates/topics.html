@@ -4,7 +4,7 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
 <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"
-	th:href="@{css/bootstrap.min.css}" />
+	th:href="@{/css/bootstrap.min.css}" />
 
 <head>
 <title>Topics</title>
@@ -33,26 +33,26 @@
 
 
 
-		<div class="mr-5">	
-			<form class="form-inline my-2 my-lg-0" action="#" 
-			th:action="@{/topics}" th:object="${searchInput}" method="get">
+		<div class="mr-5">
+			<form class="form-inline my-2 my-lg-0" action="#"
+				th:action="@{/topics}" th:object="${searchInput}" method="get">
 				<input id="userSearch" class="form-control mr-sm-2" type="search"
-					placeholder="Search topic" aria-label="Search" th:field="*{content}">
+					placeholder="Search topic" aria-label="Search"
+					th:field="*{content}">
 				<button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
 			</form>
 		</div>
-		
+
 		<div sec:authorize="!isAuthenticated()">
-			<a th:href="@{/login}"
-				class="btn btn-primary">Sign in</a>
+			<a th:href="@{/login}" class="btn btn-primary">Sign in</a>
 		</div>
 		<div sec:authorize="isAuthenticated()">
 			<form th:action="@{/logout}" method="post">
-					<input type="submit" value="Sign Out" class="btn btn-danger" />
+				<input type="submit" value="Sign Out" class="btn btn-danger" />
 			</form>
 		</div>
-		
-		
+
+
 		<button class="navbar-toggler" type="button" data-toggle="collapse"
 			data-target="#navbarSupportedContent"
 			aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -62,7 +62,8 @@
 
 	</nav>
 
-	<h1 class="text-center pb-4 pt-4">Information for exhange students in Finland</h1>
+	<h1 class="text-center pb-4 pt-4">Information for exhange students
+		in Finland</h1>
 
 
 	<table class="table table-striped">
@@ -72,6 +73,9 @@
 			<th>Author</th>
 			<th>Date</th>
 			<th>Participants</th>
+			<th/>
+			<th/>
+
 		</tr>
 
 		<tr th:each="topic : ${topics}" style="cursor: pointer"
@@ -81,6 +85,19 @@
 			<td th:text="'Author : ' + ${topic.author.getUsername()}">author...</td>
 			<td th:text="'Posted on ' + ${topic.getDate()}">date...</td>
 			<td th:text="${topic.nbParticipants} + ' people participated'">nbParticipants...</td>
+			
+			<td sec:authorize="isAuthenticated()" th:if="${#authentication.getPrincipal().getUser().getRole().equals('ADMIN') OR topic.author.getId().equals(#authentication.getPrincipal().getUser().getId())}"><a
+				th:href="@{topics/edit/{id}(id=${topic.id})}"
+				class="btn btn-primary">Edit</a></td>		
+			<td sec:authorize="hasAuthority('ADMIN')">
+				<a th:href="@{topics/delete/{id}(id=${topic.id})}"
+				class="btn btn-danger" onClick="validate()">Delete</a>
+			</td>
+			
+			<td sec:authorize="isAuthenticated()" th:if="${!#authentication.getPrincipal().getUser().getRole().equals('ADMIN') AND !topic.author.getId().equals(#authentication.getPrincipal().getUser().getId())}"/>
+			<td sec:authorize="!isAuthenticated()"/>
+			<td sec:authorize="!hasAuthority('ADMIN')"/>
+			
 		</tr>
 	</table>
 
@@ -88,15 +105,28 @@
 		function rowClicked(value) {
 			location.href = "/topics/" + value;
 		}
-		
-		document.getElementById("userSearch").addEventListener("search", 
-				function(event){
-				  if(event.type === "search"){
-					  if(event.currentTarget.value === ""){
-						  window.location.href = location.origin + location.pathname;
-					  }
-					  
-				  }
+
+		function validate() {
+			var confirm = window
+					.confirm("Are you sure you want to delete this topic ?");
+
+			if (confirm) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		document.getElementById("userSearch").addEventListener(
+				"search",
+				function(event) {
+					if (event.type === "search") {
+						if (event.currentTarget.value === "") {
+							window.location.href = location.origin
+									+ location.pathname;
+						}
+
+					}
 				});
 	</script>
 

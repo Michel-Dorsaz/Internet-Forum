@@ -1,26 +1,43 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org">
-	
+
 <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"
-	th:href="@{css/bootstrap.min.css}" />
-	
+	th:href="@{../../css/bootstrap.min.css}" />
+
 <head>
 <title>Edit topic</title>
+<style type="text/css">
+div.wrapper {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+</style>
 </head>
 <body>
-	<h1>Edit topic</h1>
-	<div>
-		<form th:object="${topic}" th:action="@{/save}" action="#" method="post">
-		
-			<input type="hidden" id="id" th:field="*{id}" readonly="readonly" /> 
-			<input type="hidden" id="author" th:field="*{author}" readonly="readonly" /> 
 
-			<label for="title">Content</label> 
-			<input type="text" id="title" th:field="*{title}" /> 
 
-			<input type="submit" value="Save"></input>
+
+	<div class="wrapper mt-2">
+		<h3 class="row align-items-center justify-content-center">Content</h3>
+
+
+		<form th:object="${topic}" th:action="@{/save}" action="#"
+			method="post">
+			<div class="row align-items-center justify-content-center mt-2">
+				<input type="hidden" id="id" th:field="*{id}" readonly="readonly" />
+				<input type="hidden" id="author" th:field="*{author}"
+					readonly="readonly" /> <input type="text" id="title"
+					th:field="*{title}" size="100" />
+
+			</div>
+			<div class="row align-items-center justify-content-center pt-50 mt-2">
+				<input type="submit" value="Save"></input>
+			</div>
 		</form>
+
 	</div>
 </body>
 </html>

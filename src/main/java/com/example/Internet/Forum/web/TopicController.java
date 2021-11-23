@@ -8,14 +8,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.h2.jdbc.JdbcSQLDataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +29,6 @@ import com.example.Internet.Forum.domain.TopicRepository;
 import com.example.Internet.Forum.domain.User;
 import com.example.Internet.Forum.domain.UserRepository;
 import com.example.Internet.Forum.domain.Message;
-import com.example.Internet.Forum.domain.Post;
 import com.example.Internet.Forum.domain.ToolSet;
 
 @Controller
@@ -336,13 +331,62 @@ public class TopicController {
 	}
 
 	@PostMapping("/save")
-	public String saveBook(Topic topic) {
+	public String saveTopic(Topic topic) {
 		
 		topic.setDate(new Date().getTime());
 		topicRep.save(topic);
 
 		return "redirect:topics";
 	}
+	
+	@GetMapping("/topics/edit/{id}")
+	public String editTopic(@PathVariable("id") long topicId, Model model) {
+		
+		try {
+			LoggedUser loggedUser = (LoggedUser) SecurityContextHolder
+					.getContext()
+					.getAuthentication()
+					.getPrincipal();
+			
+			Optional<Topic> oTopic = topicRep.findById(topicId);
+			
+			if(oTopic.isPresent()) {
+				
+				Topic topic = oTopic.get();
+				
+				if(
+						loggedUser.getUser().getId() != topic.getAuthor().getId() 
+						&& 
+						!loggedUser.getUser().getRole().contentEquals("Admin")) {
+					
+					model.addAttribute("errorMessage", "Error trying to edit topic from someone else");
+					return "error";
+					
+				}
+				else {
+									
+					model.addAttribute("topic", topic);				
+				    return "editTopic";
+				}
+				
+
+			}
+			else {
+				model.addAttribute("errorMessage", "Error while trying to retrieve topic");
+				return "error";
+			}
+
+		}
+		catch(ClassCastException e) {
+			
+			model.addAttribute("errorMessage", "Error accessing restricted functionality to logged users");
+			return "error";
+		}
+	}
+	
+	
+	
+	
 	
 	
 	public void like(long responseId) throws ClassCastException {
