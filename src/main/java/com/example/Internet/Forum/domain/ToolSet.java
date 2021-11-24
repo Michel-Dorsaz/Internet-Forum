@@ -6,6 +6,8 @@ import java.util.List;
 
 public class ToolSet {
 	
+
+	
 	public List filter(List<? extends Post> posts, String filter) {
 		
 		if(filter == null || filter.length() == 0) {

@@ -12,7 +12,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,13 +48,13 @@ public class TopicController {
 		User admin = new User(
 					"admin", 
 					"$2a$10$0MMwY.IQqpsVc1jC8u7IJ.2rT8b0Cd3b3sfIBGV2zfgnPGtT4r0.C", 
-					"user@email.com",
+					"admin@email.com",
 					"ADMIN");
 			
 		User michel = new User(
 				"michel", 
 				"$2a$06$3jYRJrg0ghaaypjZ/.g4SethoeA51ph3UD4kZi9oPkeMTpjKU5uo6", 
-				"user@email.com",
+				"michel@email.com",
 				"USER");	
 		User user = new User(
 				"user", 
@@ -307,6 +309,7 @@ public class TopicController {
 	}
 	
 	@GetMapping("/createTopic")
+	@PreAuthorize("isAuthenticated()")
 	public String createTopic(Model model) {
 		
 		try {
@@ -363,6 +366,7 @@ public class TopicController {
 	}
 	
 	@GetMapping("/topics/edit/{id}")
+	@PreAuthorize("isAuthenticated()")
 	public String editTopic(@PathVariable("id") long topicId, Model model) {
 		
 		try {
@@ -408,6 +412,7 @@ public class TopicController {
 	}
 	
 	@GetMapping("/topics/delete/{id}")
+	@PreAuthorize("isAuthenticated()")
 	public String deleteTopic(@PathVariable("id") long topicId, Model model) {
 		
 		
@@ -452,6 +457,7 @@ public class TopicController {
 	}
 
 	@GetMapping("/topics/response/edit/{id}")
+	@PreAuthorize("isAuthenticated()")
 	public String editResponse(@PathVariable("id") long responseId, Model model) {
 		
 		try {
@@ -497,6 +503,7 @@ public class TopicController {
 	}
 	
 	@GetMapping("/topics/response/delete/{id}")
+	@PreAuthorize("isAuthenticated()")
 	public String deleteResponse(@PathVariable("id") long responseId, Model model) {
 		
 		try {
@@ -542,6 +549,44 @@ public class TopicController {
 	}
 	
 	
+	
+	@GetMapping("/createUser")
+	public String createUser(Model model) {
+	
+		model.addAttribute("user", new User());
+		return "createUser";
+	}
+	
+	@PostMapping("/createUser")
+	public String createdUser(User user, Model model) {
+	
+		User existingEmail = userRep.findByEmail(user.getEmail());	
+		User existingUsername = userRep.findByUsername(user.getUsername());	
+		
+		if(existingEmail != null) {			
+			model.addAttribute("emailAlreadyExist", true);		
+		}
+		if(existingUsername != null) {			
+			model.addAttribute("usernameAlreadyExist", true);		
+		}
+		if(existingEmail != null || existingUsername != null) {
+			return "createUser";
+		}
+		else {
+				
+		
+			userRep.save(new User(
+					user.getUsername(),
+					BCrypt.hashpw(user.getPasswordHash(), BCrypt.gensalt()),
+					user.getEmail(),
+					"USER"
+					));	
+
+			
+			return "login";
+		}
+		
+	}
 	
 	
 	public void like(long responseId) throws ClassCastException {
@@ -636,7 +681,6 @@ public class TopicController {
 			throw e;
 		}
 	}
-	
-	
+
 
 }
