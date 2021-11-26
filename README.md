@@ -17,7 +17,7 @@ However the creation of topics and responses are restricted to logged users only
 - Login / creation / ✔ / ✔         
 - See topic / ✔ / ✔ / ✔      
 - Create topic / ❌ / ✔ / ✔  
-- Edit topic / ❌ / ✔ / ✔    
+- Edit topic / ❌ / only-self / ✔    
 - Delete topic / ❌ / ❌ / ✔  
 - See response / ✔ / ✔ / ✔   
 - Create response / ❌ / ✔ / ✔
