@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Internet.Forum.domain.Reaction;
 import com.example.Internet.Forum.domain.ReactionRepository;
@@ -31,7 +32,7 @@ import com.example.Internet.Forum.domain.UserRepository;
 import com.example.Internet.Forum.domain.Message;
 import com.example.Internet.Forum.domain.ToolSet;
 
-@Controller
+@RestController
 public class TopicController {
 
 	@Bean
