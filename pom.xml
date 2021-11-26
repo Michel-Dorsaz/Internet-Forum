@@ -92,7 +92,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.roufid.tutorials.AppTest</mainClass>
+							<mainClass>com.example.Internet.Forum</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
