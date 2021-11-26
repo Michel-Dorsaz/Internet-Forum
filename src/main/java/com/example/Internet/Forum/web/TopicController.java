@@ -484,7 +484,7 @@ public class TopicController {
 
 			Optional<Response> oResponse = responseRep.findById(responseId);
 
-			if (oResponse.isEmpty()) {
+			if (!oResponse.isPresent()) {
 				return;
 			}
 
@@ -534,7 +534,7 @@ public class TopicController {
 
 			Optional<Response> oResponse = responseRep.findById(responseId);
 
-			if (oResponse.isEmpty()) {
+			if (!oResponse.isPresent()) {
 				return;
 			}
 
