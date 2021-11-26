@@ -6,7 +6,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class LikeDislike {
+public class Reaction {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -17,13 +17,13 @@ public class LikeDislike {
 	private long userId;
 	private long responseId;
 	
-	public LikeDislike(boolean isLiked, long userId, long responseId) {
+	public Reaction(boolean isLiked, long userId, long responseId) {
 		this.isLiked = isLiked;
 		this.userId = userId;
 		this.responseId = responseId;
 	}
 	
-	public LikeDislike() {
+	public Reaction() {
 		
 	}
 

@@ -29,7 +29,7 @@ div.wrapper {
 			<div class="row align-items-center justify-content-center mt-2">
 				<input type="hidden" id="id" th:field="*{id}" readonly="readonly" />
 				<input type="hidden" id="author" th:field="*{author}" readonly="readonly" /> 
-				<input type="text" id="title" th:field="*{title}" size="100" />
+				<input type="text" maxlength="100" id="title" th:field="*{title}" size="125" />
 <input type="hidden" id="nbParticipants" th:field="*{nbParticipants}" readonly="readonly" />
 			</div>
 			<div class="row align-items-center justify-content-center pt-50 mt-2">

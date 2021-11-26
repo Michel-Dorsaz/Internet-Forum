@@ -11,27 +11,37 @@
 </head>
 <body>
 
-	<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-		<a class="navbar-brand" href="#"> <img
+	<nav class="navbar navbar-default navbar-expand-lg navbar-dark bg-primary">
+
+<div>
+		<a class="collapse navbar-collapse" href="#"> <img
 			th:src="@{../images/wtf.jpg}" width="60" height="60" alt="">
 		</a>
 
+			<button class="navbar-toggler" type="button" data-toggle="collapse"
+				data-target="#navbarSupportedContent"
+				aria-controls="navbarSupportedContent" aria-expanded="false"
+				aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
 
-		<div class="collapse navbar-collapse" id="navbarSupportedContent">
-			<ul class="navbar-nav mr-auto">
-
-				<li sec:authorize="!isAuthenticated()"
-					title="You must be logged to create a topic !" class="nav-item"><a
-					class="nav-link disabled" href="#" aria-disabled="true">Create
-						a topic</a></li>
-
-				<li sec:authorize="isAuthenticated()" class="nav-item active"><a
-					class="nav-link" th:href="@{/createTopic}">Create a topic</a></li>
-			</ul>
-
-		</div>
+</div>
 
 
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav mr-auto">
+
+					<li sec:authorize="!isAuthenticated()"
+						title="You must be logged to create a topic !" class="nav-item"><a
+						class="nav-link disabled" href="#" aria-disabled="true">Create
+							a topic</a></li>
+
+					<li sec:authorize="isAuthenticated()" class="nav-item active"><a
+						class="nav-link" th:href="@{/createTopic}">Create a topic</a></li>
+				</ul>
+
+			</div>
+		
 
 		<div class="mr-5">
 			<form class="form-inline my-2 my-lg-0" action="#"
@@ -52,14 +62,6 @@
 			</form>
 		</div>
 
-
-		<button class="navbar-toggler" type="button" data-toggle="collapse"
-			data-target="#navbarSupportedContent"
-			aria-controls="navbarSupportedContent" aria-expanded="false"
-			aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-
 	</nav>
 
 	<h1 class="text-center pb-4 pt-4">Information for exhange students
@@ -73,8 +75,8 @@
 			<th>Author</th>
 			<th>Date</th>
 			<th>Participants</th>
-			<th/>
-			<th/>
+			<th />
+			<th />
 
 		</tr>
 
@@ -85,22 +87,27 @@
 			<td th:text="'Author : ' + ${topic.author.getUsername()}">author...</td>
 			<td th:text="'Posted on ' + ${topic.getDate()}">date...</td>
 			<td th:text="${topic.nbParticipants} + ' people participated'">nbParticipants...</td>
-			
-			<td sec:authorize="isAuthenticated()" th:if="${#authentication.getPrincipal().getUser().getRole().equals('ADMIN') OR topic.author.getId().equals(#authentication.getPrincipal().getUser().getId())}"><a
+
+			<td sec:authorize="isAuthenticated()"
+				th:if="${#authentication.getPrincipal().getUser().getRole().equals('ADMIN') OR topic.author.getId().equals(#authentication.getPrincipal().getUser().getId())}"><a
 				th:href="@{topics/edit/{id}(id=${topic.id})}"
-				class="btn btn-primary">Edit</a></td>		
-			<td sec:authorize="hasAuthority('ADMIN')">
-				<a th:href="@{topics/delete/{id}(id=${topic.id})}"
-				class="btn btn-danger" onClick="validate()">Delete</a>
-			</td>
-			
-			<td sec:authorize="isAuthenticated()" th:if="${!#authentication.getPrincipal().getUser().getRole().equals('ADMIN') AND !topic.author.getId().equals(#authentication.getPrincipal().getUser().getId())}"/>
-			<td sec:authorize="!isAuthenticated()"/>
-			<td sec:authorize="!hasAuthority('ADMIN')"/>
-			
+				class="btn btn-primary">Edit</a></td>
+			<td sec:authorize="hasAuthority('ADMIN')"><a
+				th:href="@{topics/delete/{id}(id=${topic.id})}"
+				class="btn btn-danger" onClick="validate()">Delete</a></td>
+
+			<td sec:authorize="isAuthenticated()"
+				th:if="${!#authentication.getPrincipal().getUser().getRole().equals('ADMIN') AND !topic.author.getId().equals(#authentication.getPrincipal().getUser().getId())}" />
+			<td sec:authorize="!isAuthenticated()" />
+			<td sec:authorize="!hasAuthority('ADMIN')" />
+
 		</tr>
 	</table>
 
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+      
 	<script>
 		function rowClicked(value) {
 			location.href = "/topics/" + value;

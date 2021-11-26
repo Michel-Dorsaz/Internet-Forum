@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.Internet.Forum.domain.LikeDislike;
-import com.example.Internet.Forum.domain.LikeDislikeRepository;
+import com.example.Internet.Forum.domain.Reaction;
+import com.example.Internet.Forum.domain.ReactionRepository;
 import com.example.Internet.Forum.domain.LoggedUser;
 import com.example.Internet.Forum.domain.Response;
 import com.example.Internet.Forum.domain.ResponseRepository;
@@ -156,7 +156,7 @@ public class TopicController {
 	private UserRepository userRep;
 	
 	@Autowired
-	private LikeDislikeRepository likeDislikeRep;
+	private ReactionRepository reactionRep;
 
 	@GetMapping("/login")
 	public String loginPage(Model model) {
@@ -345,6 +345,12 @@ public class TopicController {
 	@PostMapping("/saveEditedResponse")
 	public String saveResponse(Response newResponse, Model model) {
 		
+		if(newResponse.getContent().length() > 255) {
+			
+			model.addAttribute("maxLengthExceeded", true);
+			return "editResponse";
+		}
+				
 		Optional<Response> oResponse = responseRep.findById(newResponse.getId());
 		
 		Response response = null;
@@ -436,8 +442,12 @@ public class TopicController {
 					
 				}
 				else {
-									
-					topicRep.delete(topic);			
+					
+					List<Response> linkedResponses = responseRep.findByTopic(topic);
+					
+					responseRep.deleteAll(linkedResponses);						
+					topicRep.delete(topic);	
+					
 				    return "redirect:../../topics";
 				}
 				
@@ -607,14 +617,14 @@ public class TopicController {
 			
 			Response response = oResponse.get();
 			
-			LikeDislike responseElement = likeDislikeRep.findByResponseIdAndUserId(responseId, loggedUser.getUser().getId());
+			Reaction responseElement = reactionRep.findByResponseIdAndUserId(responseId, loggedUser.getUser().getId());
 			
 			if(responseElement == null) {
-				responseElement = new LikeDislike(true, loggedUser.getUser().getId(), responseId);	
+				responseElement = new Reaction(true, loggedUser.getUser().getId(), responseId);	
 				
 			}
 			else if(responseElement.isLiked()) {
-				likeDislikeRep.delete(responseElement);
+				reactionRep.delete(responseElement);
 				
 				response.setNbLike(response.getNbLike()-1);
 				responseRep.save(response);
@@ -627,7 +637,7 @@ public class TopicController {
 			}
 
 					
-			likeDislikeRep.save(responseElement);			
+			reactionRep.save(responseElement);			
 			response.setNbLike(response.getNbLike()+1);	
 			responseRep.save(response);	
 		}
@@ -654,14 +664,14 @@ public class TopicController {
 			
 			Response response = oResponse.get();
 			
-			LikeDislike responseElement = likeDislikeRep.findByResponseIdAndUserId(responseId, loggedUser.getUser().getId());
+			Reaction responseElement = reactionRep.findByResponseIdAndUserId(responseId, loggedUser.getUser().getId());
 			
 			if(responseElement == null) {
-				responseElement = new LikeDislike(false, loggedUser.getUser().getId(), responseId);	
+				responseElement = new Reaction(false, loggedUser.getUser().getId(), responseId);	
 				
 			}
 			else if(!responseElement.isLiked()) {
-				likeDislikeRep.delete(responseElement);
+				reactionRep.delete(responseElement);
 				
 				response.setNbDislike(response.getNbDislike()-1);
 				responseRep.save(response);
@@ -673,7 +683,7 @@ public class TopicController {
 				response.setNbLike(response.getNbLike()-1);		
 			}
 				
-			likeDislikeRep.save(responseElement);
+			reactionRep.save(responseElement);
 			response.setNbDislike(response.getNbDislike()+1);	
 			responseRep.save(response);	
 			

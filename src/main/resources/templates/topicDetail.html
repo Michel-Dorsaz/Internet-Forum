@@ -25,7 +25,7 @@ div.fixed {
 	bottom: 0px;
 }
 
-.collapsed {
+.closed {
 	display: none;
 }
 
@@ -36,14 +36,34 @@ div.fixed {
 .fullWidth {
 	width: 100%
 }
+
+.navbar-collapse.in {
+    display: block !important;
+}
 </style>
 </head>
 <body>
 
-	<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-		<a class="navbar-brand" th:href="@{/topics}"> <img
+
+	<nav class="navbar navbar-default navbar-expand-lg navbar-dark bg-primary">
+		
+		<div>
+				<a class="collapse navbar-collapse" th:href="@{/topics}"> <img
 			th:src="@{../images/wtf.jpg}" width="60" height="60" alt="">
 		</a>
+		
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#navbarSupportedContent"
+			aria-controls="navbarSupportedContent" aria-expanded="false"
+			aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		
+		
+
+		
+</div>
+
 
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav mr-auto">
@@ -62,7 +82,7 @@ div.fixed {
 			</ul>
 
 		</div>
-
+		
 
 		<div class="mr-5">
 			<form class="form-inline my-2 my-lg-0" action="#"
@@ -83,14 +103,9 @@ div.fixed {
 				<input type="submit" value="Sign Out" class="btn btn-danger" />
 			</form>
 		</div>
+		
 
 
-		<button class="navbar-toggler" type="button" data-toggle="collapse"
-			data-target="#navbarSupportedContent"
-			aria-controls="navbarSupportedContent" aria-expanded="false"
-			aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
 	</nav>
 
 
@@ -163,7 +178,7 @@ div.fixed {
 	<div sec:authorize="isAuthenticated()"
 		class="header fixed bg-white text-center" id="footer">
 
-		<div class="content collapsed">
+		<div class="content closed">
 
 			<div class="container mt-4 mb-4">
 				<h4>
@@ -176,7 +191,9 @@ div.fixed {
 							<div class="form-group">
 								<textarea id="editor" th:field="*{content}"></textarea>
 							</div>
-							<button type="submit" class="btn btn-primary">Submit</button>
+							<a  class="btn btn-success" onClick="submitForm()">Save</a>
+							<a  class="btn btn-warning" onClick="">Cancel</a>
+							<a id="character_count">255 characters max !</a>
 						</form>
 					</div>
 			</div>
@@ -189,14 +206,42 @@ div.fixed {
 		src="https://cdn.tiny.cloud/1/xcutwhg1v409nkcausd265uz2522o3qznd8xw7m7nu401rnl/tinymce/5/tinymce.min.js"
 		referrerpolicy="origin"></script>
 
-	<script type="text/javascript"
-		src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+      
 	<script>
-		tinymce.init({
-			selector : 'textarea#editor',
-			menubar : false
-		});
+	
+	
+    tinymce.init({
+        selector: 'textarea#editor',
+        menubar : false,
+        setup: function (ed) {
+            ed.on('keyup', function (e) { 
+                CountCharacters();              
+            });
+        }});
+        
+    
+    function CountCharacters() {
+        var body = tinymce.get("editor").getBody();
+        var content = tinymce.trim(body.innerText || body.textContent);
+        
+        document.getElementById("character_count").innerHTML = content.length + "/255";
+        
+        return content.length;
+    };
+    
+	function submitForm() {			
+	    
+	    if (CountCharacters() > 255) {
+	        alert(CountCharacters() + "/255 characters !");
+	        return;
+	    }
+
+	    document.forms[0].submit();
+	}	
+   
 
 		$(".header").click(function() {
 
@@ -205,12 +250,13 @@ div.fixed {
 		});
 
 		function footerSwitch() {
+			
 			var content = document.getElementById("footer").children[0];
 
-			if (content.classList.contains('collapsed')) {
-				content.classList.remove('collapsed');
+			if (content.classList.contains('closed')) {
+				content.classList.remove('closed');
 			} else {
-				content.classList.toggle('collapsed');
+				content.classList.toggle('closed');
 			}
 		}
 

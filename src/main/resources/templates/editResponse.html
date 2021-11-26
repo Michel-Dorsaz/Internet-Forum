@@ -26,13 +26,16 @@ div.wrapper {
 				<form class="col-md-12 col-lg-8" th:object="${response}"
 					th:action="@{/saveEditedResponse}" action="#" method="post">
 					<div class="form-group">
-						<textarea id="editor" th:field="*{content}"></textarea>
+						<textarea id="editor" onchange="submitForm()" maxlength="255" th:field="*{content}"></textarea>
 						<input type="hidden" id="id" th:field="*{id}" readonly="readonly" />
 						<input type="hidden" id="author" th:field="*{author}"
 							readonly="readonly" />
 					</div>
-					<button type="submit" class="btn btn-primary">Submit</button>
-					<a class="btn btn-warning" onClick="cancel()">Cancel</a>
+					
+					<div class="text-danger" th:if="${maxLengthExceeded}">Maximum length 255 !</div>
+					<a  class="btn btn-success" onClick="submitForm()">Save</a>
+					<a  class="btn btn-warning" onClick="cancel()">Cancel</a>
+					<a id="character_count">255 characters max !</a>
 				</form>
 			</div>
 		</div>
@@ -42,14 +45,45 @@ div.wrapper {
 				referrerpolicy="origin"></script>
 
 			<script>
-				tinymce.init({
-					selector : 'textarea#editor',
-					menubar : false
-				});
+			
+			
+		
+		        tinymce.init({
+		            selector: 'textarea#editor',
+		            menubar : false,
+		            setup: function (ed) {
+		                ed.on('keyup', function (e) { 
+		                    CountCharacters();              
+		                });
+		            }});
+		            
+		        
+		        
+		        
+		        function CountCharacters() {
+		            var body = tinymce.get("editor").getBody();
+		            var content = tinymce.trim(body.innerText || body.textContent);
+		            
+		            document.getElementById("character_count").innerHTML = content.length + "/255";
+		            
+		            return content.length;
+		        };
+		        
 				
 				function cancel() {
 					history.go(-1);
 				}
+				
+				function submitForm() {			
+				    
+				    if (CountCharacters() > 255) {
+				        alert(CountCharacters() + "/255 characters !");
+				        return;
+				    }
+
+				    document.forms[0].submit();
+				}				
+				
 			</script>
 </body>
 </html>

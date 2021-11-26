@@ -2,8 +2,8 @@ package com.example.Internet.Forum.domain;
 
 import org.springframework.data.repository.CrudRepository;
 
-public interface LikeDislikeRepository extends CrudRepository<LikeDislike, Long>{
+public interface ReactionRepository extends CrudRepository<Reaction, Long>{
 
-	LikeDislike findByResponseIdAndUserId(long responseId, long userId);
+	Reaction findByResponseIdAndUserId(long responseId, long userId);
 	
 }
