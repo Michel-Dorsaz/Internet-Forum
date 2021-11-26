@@ -92,7 +92,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.example.Internet.Forum</mainClass>
+							<mainClass>com.example.Internet.Forum.InternetForumApplication</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
