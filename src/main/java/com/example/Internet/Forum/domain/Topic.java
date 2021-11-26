@@ -146,8 +146,6 @@ public class Topic implements Post, Comparable<Topic>{
 	}
 
 
-
-
 	@Override
 	public String getContent() {
 		
@@ -164,14 +162,10 @@ public class Topic implements Post, Comparable<Topic>{
 	}
 
 
-
-
 	@Override
 	public boolean isResponse() {
 		
 		return false;
 	}
-
-
 	
 }
