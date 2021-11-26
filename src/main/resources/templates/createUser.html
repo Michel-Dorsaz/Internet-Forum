@@ -19,32 +19,35 @@ div.wrapper {
 <body>
 
 	<div class="container mt-4 mb-4">
-	
+
 		<h4>Enter your credentials :</h4>
-		
+
 		<div class="row justify-content-md-center">
-		
-			
-			
-			
+
+
+
+
 			<form th:action="@{/createUser}" th:object="${user}" method="post">
 				<div>
-					<div class="text-danger" th:if="${emailAlreadyExist}">Email already exist !</div>
-					<label> Email address : <input th:field="*{email}"/></label>
-					
+					<div class="text-danger" th:if="${emailAlreadyExist}">Email
+						already exist !</div>
+					<label> Email address : <input th:field="*{email}" /></label>
+
 				</div>
 				<div>
-					<div class="text-danger" th:if="${usernameAlreadyExist}">Username already exist !</div>
-					<label> User Name : <input th:field="*{username}"/></label>
+					<div class="text-danger" th:if="${usernameAlreadyExist}">Username
+						already exist !</div>
+					<label> User Name : <input th:field="*{username}" /></label>
 				</div>
 				<div>
-					<label> Password: <input type="password" th:field="*{passwordHash}" name="password" />
+					<label> Password: <input type="password"
+						th:field="*{passwordHash}" name="password" />
 					</label>
 				</div>
 				<div>
-					<input type="submit" value="Create user" />
-					<a class="btn btn-warning" th:href="@{/login}">Cancel</a>
-					
+					<input type="submit" value="Create user" /> <a
+						class="btn btn-warning" th:href="@{/login}">Cancel</a>
+
 				</div>
 			</form>
 		</div>

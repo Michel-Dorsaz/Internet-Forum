@@ -1,10 +1,6 @@
 package com.example.Internet.Forum.domain;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -20,6 +16,17 @@ import javax.persistence.OneToMany;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
+/**
+ * This class represent a topic (AKA a subject).
+ * 
+ * The class implements a Post for search purpose like 
+ * {@link com.example.Internet.Forum.domain.ToolSet#BoyerMooreHorspoolSearch(String, String)}
+ * 
+ * This class implements Comparable to be sorted by date, more recent on bottom.
+ * 
+ * @author miche
+ *
+ */
 @Entity
 public class Topic implements Post, Comparable<Topic>{
 	

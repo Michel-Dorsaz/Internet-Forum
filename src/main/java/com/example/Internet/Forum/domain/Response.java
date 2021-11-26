@@ -1,7 +1,6 @@
 package com.example.Internet.Forum.domain;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,6 +9,18 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+/**
+ * This class is a response to a topic and contains the author and the topic
+ * it is related to in addition to its basic information.
+ * 
+ * The class implements a Post for search purpose like 
+ * {@link com.example.Internet.Forum.domain.ToolSet#BoyerMooreHorspoolSearch(String, String)}
+ * 
+ * This class implements Comparable to be sorted by date, more recent on top.
+ * 
+ * @author miche
+ *
+ */
 @Entity
 public class Response implements Post, Comparable<Response>{
 	

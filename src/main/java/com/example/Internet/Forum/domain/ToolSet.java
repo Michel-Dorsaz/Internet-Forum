@@ -4,10 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * This class is a set of tools like searching if a text contains another text
+ * and filtering a list of Post through a filter text.
+ * 
+ * 
+ * @author miche
+ *
+ */
 public class ToolSet {
 	
-
-	
+	/**
+	 * This method take a list of Posts (either a list of topics or responses)
+	 * and only return those whose content contain the filter sequence.
+	 *
+	 * @param posts
+	 * @param filter
+	 * @return
+	 */
 	public List filter(List<? extends Post> posts, String filter) {
 		
 		if(filter == null || filter.length() == 0) {
@@ -34,8 +48,8 @@ public class ToolSet {
 	}
 
 	/**
-	 * Implementation of the Boyer-Moore-Horspool search algorithm. Implementation
-	 * not working perfectly, algorythm fixed by myself.
+	 * Implementation of the Boyer-Moore-Horspool search algorithm. 
+	 * The Implementation was not working perfectly, so I fixed it by myself.
 	 * 
 	 * Code taken from
 	 * http://www.mathcs.emory.edu/~cheung/Courses/253/Syllabus/Text/Matching-Boyer-Moore2.html
@@ -45,7 +59,6 @@ public class ToolSet {
 	 * @author Moore
 	 * @author Horspool
 	 * 
-	 *
 	 */
 	public int BoyerMooreHorspoolSearch(String T, String P) {
 		int[] lastOcc;
@@ -75,8 +88,14 @@ public class ToolSet {
 			 * aligned with P[m-1] is: T[i0+(m-1))] Always use character T[i0 + (m-1)] to
 			 * find the shift ==========================================================
 			 */
-			// i0 = i0 + (m-1) - lastOcc[T.charAt(i0+(m-1))]; // Use last character: j =
-			// (m-1)
+			
+			
+			 /* --ORIGINAL CODE--
+			 *
+			 * i0 = i0 + (m-1) - lastOcc[T.charAt(i0+(m-1))]; // Use last character: j =
+			 * (m-1)
+			 */
+			 
 			
 			//Ensure only base unicode are checked
 			if(T.charAt(i0+j) < 128) {
@@ -91,6 +110,10 @@ public class ToolSet {
 		return -1; // no match
 	}
 
+	/**
+	 * This class is part of the BoyerMooreHorspoolSearch algorithm.
+	 * 
+	 */
 	private int[] computeLastOcc(String P) {
 
 		

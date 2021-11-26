@@ -23,6 +23,12 @@ public class UserDetailServiceImpl implements UserDetailsService {
 	}
 	
 
+	/**
+	 * Changed from UserDetails to custom LoggedUser to be able to use user
+	 * information more efficiently in controller.
+	 * 
+	 * The logging is performed by email as specified in the WebSecurityConfig.
+	 */
 	@Override
 	public LoggedUser loadUserByUsername(String email) throws UsernameNotFoundException {
 		User curruser = repository.findByEmail(email);	

@@ -5,8 +5,19 @@ import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+/**
+ * This class is an implementations of UserDetails that can provides a custom 
+ * User in addition to the UserDetails.
+ * 
+ * This class is an adapter of UserDetails for User.
+ * 
+ * @author miche
+ *
+ */
 public class LoggedUser implements UserDetails{
 
+	private static final long serialVersionUID = 1L;
+	
 	private UserDetails userDetails;
 	private User user;
 	

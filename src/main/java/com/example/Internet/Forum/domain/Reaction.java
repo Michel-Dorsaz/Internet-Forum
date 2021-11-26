@@ -5,6 +5,17 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+/**
+ * This class represent likes and dislikes through the boolean isLiked 
+ * parameter field.
+ * 
+ * The class contains the id of the user that liked the response and 
+ * the id of the response liked.
+ * 
+ * 
+ * @author miche
+ *
+ */
 @Entity
 public class Reaction {
 	
