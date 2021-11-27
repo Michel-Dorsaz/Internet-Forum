@@ -270,16 +270,15 @@ public class TopicController {
 
 			response = oResponse.get();
 
-			SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+			responseRep.save(response);
 
-			response.setContent(
-					newResponse.getContent() + " (modified on " + formatter.format(new Date().getTime()) + ")");
-
+			return "redirect:topics";
 		}
+		
+		
+		model.addAttribute("errorMessage", "Error while trying to retrieve response");
+		return "error";
 
-		responseRep.save(response);
-
-		return "redirect:topics";
 	}
 
 	@GetMapping("/topics/edit/{id}")
