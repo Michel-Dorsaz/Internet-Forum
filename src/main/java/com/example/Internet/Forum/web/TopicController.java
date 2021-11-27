@@ -43,7 +43,7 @@ public class TopicController {
 
 			User michel = new User("michel", "$2a$06$3jYRJrg0ghaaypjZ/.g4SethoeA51ph3UD4kZi9oPkeMTpjKU5uo6",
 					"michel@email.com", "USER");
-			User user = new User("user", "$2a$06$3jYRJrg0ghaaypjZ/.g4SethoeA51ph3UD4kZi9oPkeMTpjKU5uo6",
+			User user = new User("Jojo", "$2a$06$3jYRJrg0ghaaypjZ/.g4SethoeA51ph3UD4kZi9oPkeMTpjKU5uo6",
 					"user@email.com", "USER");
 
 			userRep.save(admin);
