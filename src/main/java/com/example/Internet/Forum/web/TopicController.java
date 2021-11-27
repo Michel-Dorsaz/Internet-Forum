@@ -270,6 +270,8 @@ public class TopicController {
 
 			response = oResponse.get();
 
+			response.setContent(newResponse.getContent());
+			
 			responseRep.save(response);
 
 			return "redirect:topics";
