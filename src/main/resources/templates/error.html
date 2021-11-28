@@ -20,7 +20,8 @@ div.wrapper {
 
 	
 	<div class="wrapper">
-<h1>An error occured</h1>
+<h1 th:if="${errorMessage != null}">An error occured</h1>
+<h1 th:if="${errorMessage == null}">Page not found</h1>
 <p class="row align-items-center justify-content-center" th:text="${errorMessage}"></p>
 	<div class="row align-items-center justify-content-center">
 	

@@ -101,6 +101,13 @@ public class TopicController {
 	@Autowired
 	private ReactionRepository reactionRep;
 
+	
+	@GetMapping("/")
+	public String home(Model model) {
+
+		return "redirect:/topics";
+	}
+	
 	@GetMapping("/login")
 	public String loginPage(Model model) {
 
