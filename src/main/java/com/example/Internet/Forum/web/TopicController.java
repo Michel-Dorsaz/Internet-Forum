@@ -182,7 +182,7 @@ public class TopicController {
 	}
 
 	@PostMapping("/topics/{id}")
-	public String topicdetailResponse(@PathVariable("id") Long topicId, Model model, Message input) {
+	public String topicDetailResponse(@PathVariable("id") Long topicId, Model model, Message input) {
 
 		Optional<Topic> oTopic = topicRep.findById(topicId);
 
@@ -198,8 +198,13 @@ public class TopicController {
 
 			Response newResponse = new Response(input.getContent(), new Date().getTime(), 0, 0, loggedUser.getUser(),
 					topic);
-
+			
+			topic.setNbParticipants(topic.getNbParticipants()+1);
+			topic.setDate(new Date().getTime());
+			
+			topicRep.save(topic);
 			responseRep.save(newResponse);
+			
 		} catch (ClassCastException e) {
 
 			model.addAttribute("errorMessage", "Error accessing restricted functionality to logged users");
@@ -278,6 +283,14 @@ public class TopicController {
 			response = oResponse.get();
 
 			response.setContent(newResponse.getContent());
+			
+			
+			Topic topic = response.getTopic();
+			
+			topic.setNbParticipants(topic.getNbParticipants()+1);
+			topic.setDate(new Date().getTime());
+			
+			topicRep.save(topic);
 			
 			responseRep.save(response);
 
